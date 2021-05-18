@@ -1,4 +1,5 @@
 package com.company;
+
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -13,7 +14,7 @@ public class IronProducer {
                 while (iron.size() == 10)
                     wait();
 
-                System.out.println("\nIronProducer produced-"
+                System.out.println("IronProducer produced-"
                         + quantity);
 
                 iron.add(quantity);

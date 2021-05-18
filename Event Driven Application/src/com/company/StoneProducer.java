@@ -14,7 +14,7 @@ public class StoneProducer {
                 while (iron.size() == 10)
                     wait();
 
-                System.out.println("\nStoneProducer produced-"
+                System.out.println("StoneProducer produced-"
                         + quantity);
 
                 iron.add(quantity);

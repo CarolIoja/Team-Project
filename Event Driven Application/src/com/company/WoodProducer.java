@@ -14,7 +14,7 @@ public class WoodProducer {
                 while (iron.size() == 10)
                     wait();
 
-                System.out.println("\nWoodProducer produced-"
+                System.out.println("WoodProducer produced-"
                         + quantity);
 
                 iron.add(quantity);
