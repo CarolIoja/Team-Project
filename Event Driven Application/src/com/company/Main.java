@@ -5,7 +5,8 @@ public class Main {
             throws InterruptedException
     {
         Farm prod = new Farm();
-        Thread t1 = new Thread(new Runnable() {
+        Player player = new Player();
+        /*Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -14,8 +15,21 @@ public class Main {
                     e.printStackTrace();
                 }
             }
+        });*/
+        Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    player.consume();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         });
-        t1.start();
+        //t1.start();
+        t2.start();
+        //t1.join();
+        //t2.join();
 
     }
 }
