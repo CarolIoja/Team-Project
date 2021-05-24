@@ -1,31 +1,26 @@
 package com.company;
 
-public class Player {
+public class Player extends Farm{
     Integer iron = 0;
     Integer wood = 0;
     Integer stone = 0;
-    Farm ferma = new Farm();
+    IronProducer iron_prod = new IronProducer();
+    StoneProducer stone_prod = new StoneProducer();
+    WoodProducer wood_prod = new WoodProducer();
 
-    public void consume(){
+    public void consume() throws InterruptedException {
         try {
             while (true) {
-                synchronized (this) {
-                }
-                ferma.produce();
-                iron += ferma.iron_l.getFirst();
-                System.out.println("Player got " + iron + "  iron");
-                wood += ferma.wood_l.getFirst();
-                System.out.println("Player got " + wood + "  wood");
-                stone += ferma.stone_l.getFirst();
-                System.out.println("Player got " + stone + "  stone");
-                if (iron >= 100 && wood >= 100 && stone >= 100) {
-                    System.out.println("Ready to level up");
-
-                }
-                Thread.sleep(1000);
+                iron += iron_l.getFirst();
+                System.out.println("Got " + iron + " iron");
+                wood += wood_l.getFirst();
+                System.out.println("Got " + wood + " wood");
+                stone += stone_l.getFirst();
+                System.out.println("Got " + stone + " stone");
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

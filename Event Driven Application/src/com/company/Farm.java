@@ -8,6 +8,7 @@ public class Farm {
     public LinkedList<Integer> stone_l = new LinkedList<>();
     public LinkedList<Integer> wood_l = new LinkedList<>();
 
+
     public void produce() throws InterruptedException {
         Random rand = new Random();
         try {
@@ -23,6 +24,9 @@ public class Farm {
                     wood_l.add(wood);
                     System.out.println("Added " + wood + " wood");
 
+                    while(iron_l.size() == 10 || wood_l.size() == 10 || stone_l.size() == 10){
+                        wait();
+                    }
                     Thread.sleep(1000);
                 }
             }

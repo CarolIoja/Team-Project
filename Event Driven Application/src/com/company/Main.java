@@ -4,32 +4,32 @@ public class Main {
     public static void main(String[] args)
             throws InterruptedException
     {
-        Farm prod = new Farm();
-        Player player = new Player();
-        /*Thread t1 = new Thread(new Runnable() {
+        final Combine gam = new Combine();
+        Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    prod.produce();
+                try{
+                    gam.produce();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-        });*/
+        });
         Thread t2 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
-                    player.consume();
-                } catch (Exception e) {
+                    gam.consume();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
-        //t1.start();
+
+        t1.start();
         t2.start();
-        //t1.join();
-        //t2.join();
+        t1.join();
+        t2.join();
 
     }
 }
