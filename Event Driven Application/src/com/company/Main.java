@@ -4,12 +4,12 @@ public class Main {
     public static void main(String[] args)
             throws InterruptedException
     {
-        final Combine gam = new Combine();
+        final Player p1 = new Player();
         Thread t1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
-                    gam.produce();
+                    p1.produce();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -19,7 +19,7 @@ public class Main {
             @Override
             public void run() {
                 try{
-                    gam.consume();
+                    p1.consume();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

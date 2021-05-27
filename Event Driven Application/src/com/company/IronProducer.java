@@ -3,21 +3,21 @@ package com.company;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class IronProducer {
-    LinkedList<Integer> iron = new LinkedList<>();
+public interface IronProducer {
+    LinkedList<Integer> iron_l = new LinkedList<>();
 
-    public void produce() throws InterruptedException {
+    public default void produce() throws InterruptedException {
         Random rand = new Random();
         while (true) {
             synchronized (this) {
                 int quantity = rand.nextInt(20);
-                while (iron.size() == 10)
+                while (iron_l.size() == 10)
                     wait();
 
                 System.out.println("IronProducer produced-"
                         + quantity);
 
-                iron.add(quantity);
+                iron_l.add(quantity);
 
                 notify();
 
@@ -26,5 +26,4 @@ public class IronProducer {
         }
     }
 }
-
 
