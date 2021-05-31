@@ -6,23 +6,14 @@ import java.util.Random;
 public interface StoneProducer {
     LinkedList<Integer> stone_l = new LinkedList<>();
 
-    public default void produce() throws InterruptedException {
+    default void produce() throws InterruptedException {
         Random rand = new Random();
-        while (true) {
-            synchronized (this) {
-                int quantity = rand.nextInt(20);
-                while (stone_l.size() == 10)
-                    wait();
+        int quantity = rand.nextInt(21);
 
-                System.out.println("StoneProducer produced-"
-                        + quantity);
+        System.out.println("StoneProducer produced-"
+                + quantity);
 
-                stone_l.add(quantity);
+        stone_l.add(quantity);
 
-                notify();
-
-                Thread.sleep(1000);
-            }
-        }
     }
 }

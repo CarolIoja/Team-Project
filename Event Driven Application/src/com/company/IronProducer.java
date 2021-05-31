@@ -6,24 +6,16 @@ import java.util.Random;
 public interface IronProducer {
     LinkedList<Integer> iron_l = new LinkedList<>();
 
-    public default void produce() throws InterruptedException {
+     default void produce() throws InterruptedException {
         Random rand = new Random();
-        while (true) {
-            synchronized (this) {
-                int quantity = rand.nextInt(20);
-                while (iron_l.size() == 10)
-                    wait();
 
-                System.out.println("IronProducer produced-"
-                        + quantity);
+        int quantity = rand.nextInt(21);
 
-                iron_l.add(quantity);
+        System.out.println("IronProducer produced-"
+                + quantity);
 
-                notify();
+        iron_l.add(quantity);
 
-                Thread.sleep(1000);
-            }
-        }
     }
 }
 
