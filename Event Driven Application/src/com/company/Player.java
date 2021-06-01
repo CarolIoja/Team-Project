@@ -20,44 +20,42 @@ public class Player {
 
     }
 
-    void consume() throws InterruptedException {
+    synchronized void consume() throws InterruptedException {
         while (true) {
-            synchronized (this) {
-                while (farm.iron_l.size() == 0 || farm.wood_l.size() == 0 || farm.stone_l.size() == 0) {
-                    wait();
-                }
-                iron += farm.iron_l.removeFirst();
-                wood += farm.wood_l.removeFirst();
-                stone += farm.stone_l.removeFirst();
-                System.out.println(name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
-
-                level_up();
-                win();
-                notifyAll();
-
-                Thread.sleep(1000);
+            while (farm.iron_l.size() == 0 || farm.wood_l.size() == 0 || farm.stone_l.size() == 0) {
+                wait();
             }
+            iron += farm.iron_l.removeFirst();
+            wood += farm.wood_l.removeFirst();
+            stone += farm.stone_l.removeFirst();
+            System.out.println(name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
+
+            level_up();
+            win();
+            notifyAll();
+
+            Thread.sleep(1000);
+
         }
     }
 
-    void produce() throws InterruptedException {
+    synchronized void produce() throws InterruptedException {
         while (true) {
-            synchronized (this) {
-                int ir = rand.nextInt(quantity);
-                while (farm.iron_l.size() == 10 || farm.wood_l.size() == 10 || farm.stone_l.size() == 10) {
-                    wait();
-                }
-                farm.iron_l.add(ir);
-                //System.out.println(name + " farm's added " + ir + " iron");
-                int st = rand.nextInt(quantity);
-                farm.stone_l.add(st);
-                //System.out.println(name + " farm's added " + st + " stone");
-                int wd = rand.nextInt(quantity);
-                farm.wood_l.add(wd);
-                //System.out.println(name + " farm's added " + wd + " wood");
-                notify();
-                Thread.sleep(1000);
+            int ir = rand.nextInt(quantity);
+            while (farm.iron_l.size() == 10 || farm.wood_l.size() == 10 || farm.stone_l.size() == 10) {
+                wait();
             }
+            farm.iron_l.add(ir);
+            //System.out.println(name + " farm's added " + ir + " iron");
+            int st = rand.nextInt(quantity);
+            farm.stone_l.add(st);
+            //System.out.println(name + " farm's added " + st + " stone");
+            int wd = rand.nextInt(quantity);
+            farm.wood_l.add(wd);
+            //System.out.println(name + " farm's added " + wd + " wood");
+            notify();
+            Thread.sleep(1000);
+
         }
     }
     public void level_up(){
