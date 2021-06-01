@@ -11,7 +11,7 @@ public class Main {
         final Player p1 = new Player("Ron",try1);
         final Player p2 = new Player("Billy",try1);
         final Player p3 = new Player("Josh",try1);
-        Thread t1 = new Thread(() -> {
+        /*Thread t1 = new Thread(() -> {
             try{
                 p0.produce();
             }catch (InterruptedException e){
@@ -25,11 +25,20 @@ public class Main {
                 e.printStackTrace();
             }
         });
+        Thread t3 = new Thread(() ->{
+           try{
+               p2.consume();
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
+        });
         t1.start();
         t2.start();
+        t3.start();
         t1.join();
         t2.join();
-        /*Thread t1 = new Thread(() -> {
+        t3.join();*/
+        Thread t1 = new Thread(() -> {
             try{
                 p1.produce();
             } catch (InterruptedException e) {
@@ -83,7 +92,7 @@ public class Main {
         t4.join();
         t5.join();
         t6.join();
-         */
+
 
     }
 }

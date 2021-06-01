@@ -2,9 +2,11 @@ package com.company;
 
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public interface WoodProducer {
-    LinkedList<Integer> wood_l = new LinkedList<>();
+    LinkedBlockingQueue<Integer> wood_l = new LinkedBlockingQueue<>();
 
   default void produce() throws InterruptedException {
       Random rand = new Random();

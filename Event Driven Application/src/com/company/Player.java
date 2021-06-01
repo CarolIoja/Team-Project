@@ -11,8 +11,11 @@ public class Player {
     int quantity = 20;
     Random rand = new Random();
     public int level = 1;
-    boolean is_steal = false;
     String name;
+    int cooldown = 10;
+    volatile int ir;
+    volatile int st;
+    volatile int wd;
 
     Player(String something,Farm farm){
         this.name = something;
@@ -25,14 +28,27 @@ public class Player {
             while (farm.iron_l.size() == 0 || farm.wood_l.size() == 0 || farm.stone_l.size() == 0) {
                 wait();
             }
-            iron += farm.iron_l.removeFirst();
-            wood += farm.wood_l.removeFirst();
-            stone += farm.stone_l.removeFirst();
+            iron += farm.iron_l.poll();
+            wood += farm.wood_l.poll();
+            stone += farm.stone_l.poll();
             System.out.println(name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
 
             level_up();
             win();
             notifyAll();
+            cooldown --;
+            if(steal()){
+                if(cooldown == 0) {
+                    cooldown = 10;
+                    iron -= 20;
+                    wood -= 20;
+                    stone -= 20;
+                }
+            }else{
+                iron += 20;
+                wood += 20;
+                stone += 20;
+            }
 
             Thread.sleep(1000);
 
@@ -41,17 +57,17 @@ public class Player {
 
     synchronized void produce() throws InterruptedException {
         while (true) {
-            int ir = rand.nextInt(quantity);
+            ir = rand.nextInt(quantity);
             while (farm.iron_l.size() == 10 || farm.wood_l.size() == 10 || farm.stone_l.size() == 10) {
                 wait();
             }
-            farm.iron_l.add(ir);
+            farm.iron_l.offer(ir);
             //System.out.println(name + " farm's added " + ir + " iron");
-            int st = rand.nextInt(quantity);
-            farm.stone_l.add(st);
+            st = rand.nextInt(quantity);
+            farm.stone_l.offer(st);
             //System.out.println(name + " farm's added " + st + " stone");
-            int wd = rand.nextInt(quantity);
-            farm.wood_l.add(wd);
+            wd = rand.nextInt(quantity);
+            farm.wood_l.offer(wd);
             //System.out.println(name + " farm's added " + wd + " wood");
             notify();
             Thread.sleep(1000);
@@ -66,7 +82,7 @@ public class Player {
             quantity += 20;
             level += 1;
             max_quantity += 100;
-            System.out.println(name+ "has leveled up to level " + level);
+            System.out.println(name+" has leveled up to level " + level);
         }
     }
 
@@ -77,9 +93,13 @@ public class Player {
         }
     }
 
-    public void steal(){
+    public boolean steal(){
         int chance = rand.nextInt(2);
-        is_steal = chance == 0;
+        if (chance == 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }
