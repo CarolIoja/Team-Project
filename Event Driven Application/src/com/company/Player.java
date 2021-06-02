@@ -1,12 +1,9 @@
 package com.company;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Player implements Runnable{
-    LinkedBlockingQueue<Integer> trade_iron = new LinkedBlockingQueue<>(1);
-    LinkedBlockingQueue<Integer> trade_stone =  new LinkedBlockingQueue<>(1);
-    LinkedBlockingQueue<Integer> trade_wood = new LinkedBlockingQueue<>(1);
+    TradeCenter center;
     Farm farm;
     Integer iron = 0;
     Integer wood = 0;
@@ -19,9 +16,10 @@ public class Player implements Runnable{
     int cooldown = 5;
     int trade_amount;
 
-    Player(Farm farm){
-        this.name = ThreadLocalRandom.current().nextInt(10000);
+    Player(Farm farm,TradeCenter center){
+        this.name = ThreadLocalRandom.current().nextInt((int) Double.POSITIVE_INFINITY);
         this.farm = farm;
+        this.center = center;
 
     }
 
@@ -34,7 +32,7 @@ public class Player implements Runnable{
             iron += farm.iron_l.poll();
             wood += farm.wood_l.poll();
             stone += farm.stone_l.poll();
-            System.out.println(name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
+            System.out.println("Player:"+name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
             level_up();
             win();
             countdown--;
@@ -59,13 +57,13 @@ public class Player implements Runnable{
             quantity += 20;
             level += 1;
             max_quantity += 100;
-            System.out.println(name+" has leveled up to level " + level);
+            System.out.println("Player:"+name+" has leveled up to level " + level);
         }
     }
 
     public void win(){
         if (level >= 5){
-            System.out.println(name+" WON");
+            System.out.println("Player:"+name+" WON");
             System.exit(0);
         }
     }
@@ -73,12 +71,12 @@ public class Player implements Runnable{
     public void steal(){
         int chance = ThreadLocalRandom.current().nextInt(2);
         if(chance == 0){
-            System.out.println(name +" tried to steal from the farm but was caught!");
+            System.out.println("Player:"+name +" tried to steal from the farm but was caught!");
             iron -= 50;
             wood -= 50;
             stone -= 50;
         }else{
-            System.out.println(name +" tried to steal from the farm but was not caught!");
+            System.out.println("Player:"+name +" tried to steal from the farm but was not caught!");
             iron += 50;
             wood += 50;
             stone += 50;
@@ -87,60 +85,200 @@ public class Player implements Runnable{
 
     }
     public synchronized void trade() throws InterruptedException {
-        float percent = ThreadLocalRandom.current().nextInt(1,71);
-        cooldown = 5;
-        /*if(trade_iron.size() < 1 || trade_stone.size() < 1 || trade_wood.size() < 1) {
-            switch (trading) {
+        cooldown = 15;
+        if(center.trade_iron.size() >= 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() >= 1){
+            int pick = ThreadLocalRandom.current().nextInt(1,4);
+            switch (pick) {
                 case 1 -> {
-                    trade_amount = (iron * (Math.round(percent / 100)));
-                    iron -= trade_amount;
-                    trade_iron.put(trade_amount);
-                    System.out.println(name + " traded " + trade_amount + " iron");
+                    iron += center.trade_iron.poll();
+                    System.out.println("Thread:"+name+" got some iron through the TradeCenter");
                 }
                 case 2 -> {
-                    trade_amount = (stone * (Math.round(percent / 100)));
-                    stone -= trade_amount;
-                    trade_iron.put(trade_amount);
-                    System.out.println(name + " traded " + trade_amount + " stone");
+                    wood += center.trade_wood.poll();
+                    System.out.println("Thread:"+name+" got some wood through the TradeCenter");
                 }
                 case 3 -> {
-                    trade_amount = (wood * (Math.round(percent / 100)));
-                    wood -= trade_amount;
-                    trade_iron.put(trade_amount);
-                    System.out.println(name + " traded " + trade_amount + " wood");
+                    stone += center.trade_stone.poll();
+                    System.out.println("Thread:"+name+" got some stone through the TradeCenter");
                 }
-                default -> {
-                    System.out.println("Wrong material found");
-                    System.exit(0);
-                }
+                default -> System.out.println("Wrong Material!!!");
             }
-            notifyAll();
-        }else if(trade_iron.size() >= 1 || trade)*/
-        if(trade_iron.size() < 1 && trade_wood.size() >= 1 & trade_stone.size() >= 1){
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() >= 1){
+            int pick = ThreadLocalRandom.current().nextInt(1,3);
+            switch (pick){
+                case 1 -> {
+                    wood += center.trade_wood.poll();
+                    System.out.println("Thread:"+name+" got some wood through the TradeCenter");
+                }
+                case 2 -> {
+                    stone += center.trade_stone.poll();
+                    System.out.println("Thread:"+name+" got some stone through the TradeCenter");
+                }
+                default -> System.out.println("Wrong Material1!!");
+            }
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() < 1 && center.trade_stone.size() >= 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1, 3);
+            switch (pick) {
+                case 1 -> {
+                    iron += center.trade_iron.poll();
+                    System.out.println("Thread:"+name+" got some iron through the TradeCenter");
+                }
+                case 2 -> {
+                    stone += center.trade_stone.poll();
+                    System.out.println("Thread:"+name+" got some stone through the TradeCenter");
+                }
+                default -> System.out.println("Wrong Material!1!");
+            }
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() < 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1, 3);
+            switch (pick) {
+                case 1 -> {
+                    iron += center.trade_iron.poll();
+                    System.out.println("Thread:"+name+" got some iron through the TradeCenter");
+                }
+                case 2 -> {
+                    wood += center.trade_wood.poll();
+                    System.out.println("Thread:"+name+" got some wood through the TradeCenter");
+                }
+                default -> System.out.println("Wrong Material!!1");
+            }
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() < 1 && center.trade_stone.size() >= 1) {
+            stone += center.trade_stone.poll();
+            System.out.println("Thread:"+name+" got some stone through the TradeCenter");
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() < 1 && center.trade_stone.size() < 1) {
+            iron += center.trade_iron.poll();
+            System.out.println("Thread:"+name+" got some iron through the TradeCenter");
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() < 1) {
+            wood += center.trade_wood.poll();
+            System.out.println("Thread:"+name+" got some wood through the TradeCenter");
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() < 1 && center.trade_stone.size() < 1) {
+            wait();
+        }
+
+        if(center.trade_iron.size() >= 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() >= 1){
+            wait();
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() >= 1){
+            float percent = ThreadLocalRandom.current().nextInt(1,71);
             trade_amount = (iron * (Math.round(percent / 100)));
             iron -= trade_amount;
-            trade_iron.put(trade_amount);
-            System.out.println(name + " traded " + trade_amount + " iron");
-        }else if(trade_iron.size() >= 1 && trade_wood.size() < 1 & trade_stone.size() >= 1){
-            trade_amount = (stone * (Math.round(percent / 100)));
-            stone -= trade_amount;
-            trade_iron.put(trade_amount);
-            System.out.println(name + " traded " + trade_amount + " stone");
-        }else if(trade_iron.size() >= 1 && trade_wood.size() >= 1 & trade_stone.size() < 1){
+            center.trade_iron.put(trade_amount);
+            System.out.println("Thread:"+name+" put some iron in the TradeCenter");
+            notify();
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() < 1 && center.trade_stone.size() >= 1) {
+            float percent = ThreadLocalRandom.current().nextInt(1,71);
             trade_amount = (wood * (Math.round(percent / 100)));
             wood -= trade_amount;
-            trade_iron.put(trade_amount);
-            System.out.println(name + " traded " + trade_amount + " wood");
-        }else if(trade_iron.size() < 1 && trade_wood.size() < 1 & trade_stone.size() >= 1){
-
+            center.trade_wood.put(trade_amount);
+            System.out.println("Thread:"+name+" put some wood in the TradeCenter");
+            notify();
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() < 1) {
+            float percent = ThreadLocalRandom.current().nextInt(1,71);
+            trade_amount = (stone * (Math.round(percent / 100)));
+            stone -= trade_amount;
+            center.trade_stone.put(trade_amount);
+            System.out.println("Thread:"+name+" put some stone in the TradeCenter");
+            notify();
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() < 1 && center.trade_stone.size() >= 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1, 3);
+            switch (pick) {
+                case 1 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (iron * (Math.round(percent / 100)));
+                    iron -= trade_amount;
+                    center.trade_iron.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some iron in the TradeCenter");
+                    notify();
+                }
+                case 2 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (wood * (Math.round(percent / 100)));
+                    wood -= trade_amount;
+                    center.trade_wood.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some wood in the TradeCenter");
+                    notify();
+                }
+                default -> System.out.println("Wrong Material!!1");
+            }
+        }else if(center.trade_iron.size() >= 1 && center.trade_wood.size() < 1 && center.trade_stone.size() < 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1, 3);
+            switch (pick) {
+                case 1 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (wood * (Math.round(percent / 100)));
+                    wood -= trade_amount;
+                    center.trade_wood.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some wood in the TradeCenter");
+                    notify();
+                }
+                case 2 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (stone * (Math.round(percent / 100)));
+                    stone -= trade_amount;
+                    center.trade_stone.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some stone in the TradeCenter");
+                    notify();
+                }
+                default -> System.out.println("Wrong Material!!1");
+            }
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() >= 1 && center.trade_stone.size() < 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1, 3);
+            switch (pick) {
+                case 1 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (iron * (Math.round(percent / 100)));
+                    iron -= trade_amount;
+                    center.trade_iron.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some iron in the TradeCenter");
+                    notify();
+                }
+                case 2 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (stone * (Math.round(percent / 100)));
+                    stone -= trade_amount;
+                    center.trade_stone.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some stone in the TradeCenter");
+                    notify();
+                }
+                default -> System.out.println("Wrong Material!!1");
+            }
+        }else if(center.trade_iron.size() < 1 && center.trade_wood.size() < 1 && center.trade_stone.size() < 1) {
+            int pick = ThreadLocalRandom.current().nextInt(1,4);
+            switch (pick) {
+                case 1 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (iron * (Math.round(percent / 100)));
+                    iron -= trade_amount;
+                    center.trade_iron.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some iron in the TradeCenter");
+                    notify();
+                }
+                case 2 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (wood * (Math.round(percent / 100)));
+                    wood -= trade_amount;
+                    center.trade_wood.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some wood in the TradeCenter");
+                    notify();
+                }
+                case 3 -> {
+                    float percent = ThreadLocalRandom.current().nextInt(1,71);
+                    trade_amount = (stone * (Math.round(percent / 100)));
+                    stone -= trade_amount;
+                    center.trade_stone.put(trade_amount);
+                    System.out.println("Thread:"+name+" put some stone in the TradeCenter");
+                    notify();
+                }
+                default -> System.out.println("Wrong Material!!!");
+            }
         }
+
 
     }
 
     @Override
     public void run() {
         try {
-            System.out.println("Thread "+name+" started");
+            System.out.println("Player:"+name+" started");
             consume();
         } catch (InterruptedException e) {
             e.printStackTrace();
