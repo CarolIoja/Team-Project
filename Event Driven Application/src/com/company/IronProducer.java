@@ -1,15 +1,14 @@
 package com.company;
 
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 public interface IronProducer {
      LinkedBlockingQueue<Integer> iron_l = new LinkedBlockingQueue<>();
 
      default void produce() throws InterruptedException {
-        Random rand = new Random();
 
-        int quantity = rand.nextInt(21);
+        int quantity = ThreadLocalRandom.current().nextInt(21);
 
         //System.out.println("IronProducer produced-"
                // + quantity);

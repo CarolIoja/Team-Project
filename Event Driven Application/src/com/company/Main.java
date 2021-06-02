@@ -1,61 +1,22 @@
 package com.company;
 
 
+//import java.util.Random;
+
 public class Main {
     public static void main(String[] args)
             throws InterruptedException
     {
+        //Random rand = new Random();
         final Farm try1 = new Farm();
-        final Player p1 = new Player("Ron",try1);
-        final Player p2 = new Player("Billy",try1);
-        final Player p3 = new Player("Josh",try1);
-        /*Thread t1 = new Thread(() -> {
-            try{
-                try1.produce();
-            }catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        });
-        Thread t2 = new Thread(() ->{
-           try{
-               p0.consume();
-           } catch (InterruptedException e) {
-               e.printStackTrace();
-           }
-        });
-        t1.start();
-        t2.start();
-        t1.join();
-        t2.join();
-         */
-        Thread t1 = new Thread(() -> {
-            try{
-                try1.produce();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread t2 = new Thread(() -> {
-            try{
-                p1.consume();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread t4 = new Thread(() -> {
-            try{
-                p2.consume();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread t6 = new Thread(() -> {
-            try{
-                p3.consume();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
+        //Stream.generate(new Player(String.valueOf(rand.nextInt(1000)),try1)::consume);
+        final Player p1 = new Player(try1);
+        final Player p2 = new Player(try1);
+        final Player p3 = new Player(try1);
+        Thread t1 = new Thread(try1);
+        Thread t2 = new Thread(p1);
+        Thread t4 = new Thread(p2);
+        Thread t6 = new Thread(p3);
         t1.start();
         t2.start();
         t4.start();

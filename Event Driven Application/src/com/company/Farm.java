@@ -1,7 +1,7 @@
 package com.company;
 
 
-public class Farm implements IronProducer,StoneProducer,WoodProducer{
+public class Farm implements IronProducer,StoneProducer,WoodProducer,Runnable{
 
     public synchronized void produce() throws InterruptedException {
         while(true) {
@@ -18,6 +18,15 @@ public class Farm implements IronProducer,StoneProducer,WoodProducer{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            produce();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

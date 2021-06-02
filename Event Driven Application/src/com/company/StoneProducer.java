@@ -1,14 +1,13 @@
 package com.company;
 
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 public interface StoneProducer {
     LinkedBlockingQueue<Integer> stone_l = new LinkedBlockingQueue<>();
 
     default void produce() throws InterruptedException {
-        Random rand = new Random();
-        int quantity = rand.nextInt(21);
+        int quantity = ThreadLocalRandom.current().nextInt(21);
 
         //System.out.println("StoneProducer produced-"
                // + quantity);

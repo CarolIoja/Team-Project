@@ -1,21 +1,30 @@
 package com.company;
 
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Player {
+public class Player implements Runnable{
+    LinkedBlockingQueue<Integer> trade_iron;
+    LinkedBlockingQueue<Integer> trade_stone;
+    LinkedBlockingQueue<Integer> trade_wood;
     Farm farm;
     Integer iron = 0;
     Integer wood = 0;
     Integer stone = 0;
+    AtomicInteger traded_iron;
+    AtomicInteger traded_stone;
+    AtomicInteger traded_wood;
     int max_quantity = 100;
     int quantity = 20;
     Random rand = new Random();
     public int level = 1;
-    String name;
+    int name;
     int countdown = 10;
 
-    Player(String something,Farm farm){
-        this.name = something;
+    Player(Farm farm){
+        this.name = ThreadLocalRandom.current().nextInt(10000);
         this.farm = farm;
 
     }
@@ -30,22 +39,11 @@ public class Player {
             wood += farm.wood_l.poll();
             stone += farm.stone_l.poll();
             System.out.println(name + " collected " + iron + " iron " + stone + " stone and " + wood + " wood");
-
             level_up();
             win();
-            //notifyAll();
             countdown--;
-            if(steal()){
-                if(countdown == 0) {
-                    countdown = 10;
-                    iron -= 20;
-                    wood -= 20;
-                    stone -= 20;
-                }
-            }else{
-                iron += 20;
-                wood += 20;
-                stone += 20;
+            if(countdown == 0){
+                steal();
             }
 
             Thread.sleep(1000);
@@ -53,25 +51,6 @@ public class Player {
         }
     }
 
-    /*synchronized void produce() throws InterruptedException {
-        while (true) {
-            ir = rand.nextInt(quantity);
-            while (farm.iron_l.size() == 10 || farm.wood_l.size() == 10 || farm.stone_l.size() == 10) {
-                wait();
-            }
-            farm.iron_l.offer(ir);
-            //System.out.println(name + " farm's added " + ir + " iron");
-            st = rand.nextInt(quantity);
-            farm.stone_l.offer(st);
-            //System.out.println(name + " farm's added " + st + " stone");
-            wd = rand.nextInt(quantity);
-            farm.wood_l.offer(wd);
-            //System.out.println(name + " farm's added " + wd + " wood");
-            notify();
-            Thread.sleep(1000);
-
-        }
-    }*/
     public void level_up(){
         if (iron >= max_quantity && wood >= max_quantity && stone >= max_quantity) {
             iron -= 100;
@@ -91,9 +70,33 @@ public class Player {
         }
     }
 
-    public boolean steal(){
-        int chance = rand.nextInt(2);
-        return chance == 0;
+    public void steal(){
+        int chance = ThreadLocalRandom.current().nextInt(2);
+        if(chance == 0){
+            System.out.println(name +" tried to steal from the farm but was caught!");
+            iron -= 50;
+            wood -= 50;
+            stone -= 50;
+        }else{
+            System.out.println(name +" tried to steal from the farm but was not caught!");
+            iron += 50;
+            wood += 50;
+            stone += 50;
+        }
+        countdown = 10;
+
+    }
+    public void trade(){
+
     }
 
+    @Override
+    public void run() {
+        try {
+            System.out.println("Thread "+name+" started");
+            consume();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }
