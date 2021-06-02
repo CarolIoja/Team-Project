@@ -1,27 +1,23 @@
 package com.company;
 
-import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Player implements Runnable{
-    LinkedBlockingQueue<Integer> trade_iron;
-    LinkedBlockingQueue<Integer> trade_stone;
-    LinkedBlockingQueue<Integer> trade_wood;
+    LinkedBlockingQueue<Integer> trade_iron = new LinkedBlockingQueue<>(1);
+    LinkedBlockingQueue<Integer> trade_stone =  new LinkedBlockingQueue<>(1);
+    LinkedBlockingQueue<Integer> trade_wood = new LinkedBlockingQueue<>(1);
     Farm farm;
     Integer iron = 0;
     Integer wood = 0;
     Integer stone = 0;
-    AtomicInteger traded_iron;
-    AtomicInteger traded_stone;
-    AtomicInteger traded_wood;
     int max_quantity = 100;
     int quantity = 20;
-    Random rand = new Random();
     public int level = 1;
     int name;
     int countdown = 10;
+    int cooldown = 5;
+    int trade_amount;
 
     Player(Farm farm){
         this.name = ThreadLocalRandom.current().nextInt(10000);
@@ -42,8 +38,12 @@ public class Player implements Runnable{
             level_up();
             win();
             countdown--;
+            cooldown--;
             if(countdown == 0){
                 steal();
+            }
+            if(cooldown == 0){
+                trade();
             }
 
             Thread.sleep(1000);
@@ -86,7 +86,54 @@ public class Player implements Runnable{
         countdown = 10;
 
     }
-    public void trade(){
+    public synchronized void trade() throws InterruptedException {
+        float percent = ThreadLocalRandom.current().nextInt(1,71);
+        cooldown = 5;
+        /*if(trade_iron.size() < 1 || trade_stone.size() < 1 || trade_wood.size() < 1) {
+            switch (trading) {
+                case 1 -> {
+                    trade_amount = (iron * (Math.round(percent / 100)));
+                    iron -= trade_amount;
+                    trade_iron.put(trade_amount);
+                    System.out.println(name + " traded " + trade_amount + " iron");
+                }
+                case 2 -> {
+                    trade_amount = (stone * (Math.round(percent / 100)));
+                    stone -= trade_amount;
+                    trade_iron.put(trade_amount);
+                    System.out.println(name + " traded " + trade_amount + " stone");
+                }
+                case 3 -> {
+                    trade_amount = (wood * (Math.round(percent / 100)));
+                    wood -= trade_amount;
+                    trade_iron.put(trade_amount);
+                    System.out.println(name + " traded " + trade_amount + " wood");
+                }
+                default -> {
+                    System.out.println("Wrong material found");
+                    System.exit(0);
+                }
+            }
+            notifyAll();
+        }else if(trade_iron.size() >= 1 || trade)*/
+        if(trade_iron.size() < 1 && trade_wood.size() >= 1 & trade_stone.size() >= 1){
+            trade_amount = (iron * (Math.round(percent / 100)));
+            iron -= trade_amount;
+            trade_iron.put(trade_amount);
+            System.out.println(name + " traded " + trade_amount + " iron");
+        }else if(trade_iron.size() >= 1 && trade_wood.size() < 1 & trade_stone.size() >= 1){
+            trade_amount = (stone * (Math.round(percent / 100)));
+            stone -= trade_amount;
+            trade_iron.put(trade_amount);
+            System.out.println(name + " traded " + trade_amount + " stone");
+        }else if(trade_iron.size() >= 1 && trade_wood.size() >= 1 & trade_stone.size() < 1){
+            trade_amount = (wood * (Math.round(percent / 100)));
+            wood -= trade_amount;
+            trade_iron.put(trade_amount);
+            System.out.println(name + " traded " + trade_amount + " wood");
+        }else if(trade_iron.size() < 1 && trade_wood.size() < 1 & trade_stone.size() >= 1){
+
+        }
 
     }
 
