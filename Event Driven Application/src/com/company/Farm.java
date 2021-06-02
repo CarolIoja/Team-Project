@@ -1,16 +1,18 @@
 package com.company;
 
-public class Farm implements IronProducer,WoodProducer,StoneProducer{
-    @Override
+
+public class Farm implements IronProducer,StoneProducer,WoodProducer{
+
     public synchronized void produce() throws InterruptedException {
         while(true) {
             IronProducer.super.produce();
-            WoodProducer.super.produce();
             StoneProducer.super.produce();
-            while (stone_l.size() == 10 && wood_l.size() == 10 && iron_l.size() == 10) {
-                wait();
+            WoodProducer.super.produce();
+            if(stone_l.size() < 10 || wood_l.size() < 10 || iron_l.size() < 10) {
+                continue;
             }
-            notify();
+
+            notifyAll();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

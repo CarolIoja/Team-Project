@@ -1,8 +1,6 @@
 package com.company;
 
-import java.util.LinkedList;
 import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public interface WoodProducer {
@@ -12,8 +10,8 @@ public interface WoodProducer {
       Random rand = new Random();
       int quantity = rand.nextInt(21);
 
-      System.out.println("WoodProducer produced-"
-              + quantity);
+     // System.out.println("WoodProducer produced-"
+              //+ quantity);
 
       wood_l.add(quantity);
 

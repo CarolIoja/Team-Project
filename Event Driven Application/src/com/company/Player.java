@@ -12,10 +12,7 @@ public class Player {
     Random rand = new Random();
     public int level = 1;
     String name;
-    int cooldown = 10;
-    volatile int ir;
-    volatile int st;
-    volatile int wd;
+    int countdown = 10;
 
     Player(String something,Farm farm){
         this.name = something;
@@ -26,6 +23,7 @@ public class Player {
     synchronized void consume() throws InterruptedException {
         while (true) {
             while (farm.iron_l.size() == 0 || farm.wood_l.size() == 0 || farm.stone_l.size() == 0) {
+                notifyAll();
                 wait();
             }
             iron += farm.iron_l.poll();
@@ -35,11 +33,11 @@ public class Player {
 
             level_up();
             win();
-            notifyAll();
-            cooldown --;
+            //notifyAll();
+            countdown--;
             if(steal()){
-                if(cooldown == 0) {
-                    cooldown = 10;
+                if(countdown == 0) {
+                    countdown = 10;
                     iron -= 20;
                     wood -= 20;
                     stone -= 20;
@@ -55,7 +53,7 @@ public class Player {
         }
     }
 
-    synchronized void produce() throws InterruptedException {
+    /*synchronized void produce() throws InterruptedException {
         while (true) {
             ir = rand.nextInt(quantity);
             while (farm.iron_l.size() == 10 || farm.wood_l.size() == 10 || farm.stone_l.size() == 10) {
@@ -73,7 +71,7 @@ public class Player {
             Thread.sleep(1000);
 
         }
-    }
+    }*/
     public void level_up(){
         if (iron >= max_quantity && wood >= max_quantity && stone >= max_quantity) {
             iron -= 100;
@@ -95,11 +93,7 @@ public class Player {
 
     public boolean steal(){
         int chance = rand.nextInt(2);
-        if (chance == 0){
-            return true;
-        }else{
-            return false;
-        }
+        return chance == 0;
     }
 
 }
